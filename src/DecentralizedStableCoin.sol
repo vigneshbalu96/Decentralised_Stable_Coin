@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
  * Collateral: Exogenous (Eth & BTC)
  * Relative Stability: Pegged to USD
  *
- * @notice This contract is an ERC20 implementation and meant to be governed by DSCEngine.
+ * @notice This contract is an ERC20 implementation of our stable_coin system and it is meant to be governed by DSCEngine.
  */
 
 contract DecentralizedStableCoin {
