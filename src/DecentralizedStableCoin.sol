@@ -10,7 +10,6 @@ pragma solidity ^0.8.20;
  *
  * @notice This contract is an ERC20 implementation of our stable_coin system and it is meant to be governed by DSCEngine.
  */
-
 contract DecentralizedStableCoin {
     constructor() {}
 }
