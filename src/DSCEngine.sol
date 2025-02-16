@@ -50,6 +50,7 @@ contract DSCEngine {
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
     mapping(address token => address priceFeed) private s_priceFeeds;
+    DecentralizedStableCoin private immutable i_dsc;
     /*//////////////////////////////////////////////////////////////
                                 MODIFIERS
     //////////////////////////////////////////////////////////////*/
@@ -65,9 +66,15 @@ contract DSCEngine {
     //////////////////////////////////////////////////////////////*/
 
     constructor(address[] memory tokenAddresses, address[] memory priceFeedAddresses, address dscAddress) {
+        // USD Price Feeds
         if (tokenAddresses.length != priceFeedAddresses.length) {
             revert DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSame();
         }
+        // For Eg: ETH/USD, BTC/USD, MKR/USD
+        for (uint256 i = 0; i < tokenAddresses.length; i++) {
+            s_priceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
+        }
+        i_dsc = DecentralizedStableCoin(dscAddress);
     }
 
     /*//////////////////////////////////////////////////////////////
