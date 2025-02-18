@@ -55,6 +55,9 @@ contract DSCEngine is ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
     mapping(address token => address priceFeed) private s_priceFeeds;
     mapping(address user => mapping(address token => uint256 amount)) private s_collateralDeposited;
+    mapping(address user => uint256 amountDscMinted) private s_DSCMinted;
+
+    address[] private s_collateralTokens;
 
     DecentralizedStableCoin private immutable i_dsc;
 
@@ -124,11 +127,56 @@ contract DSCEngine is ReentrancyGuard {
 
     function redeemcollateral() external {}
 
-    function mintDSC() external {}
+    // Check if the Collateral value  > DSC amount, which involves priceFeeds, checking values and other stuffs.
+    /**
+     * @notice follows CEI
+     * @param amountDscToMint - The amount of DSC required to mint for the collateral deposited.
+     * @notice they must have more collateral value then the minimum threshold.
+     */
+    function mintDSC(uint256 amountDscToMint) external moreThanZero(amountDscToMint) nonReentrant {
+        s_DSCMinted[msg.sender] += amountDscToMint;
+    }
 
     function burnDSC() external {}
 
     function getHealthFactor() external {}
 
     function liquidate() external {}
+
+    /*//////////////////////////////////////////////////////////////
+                     PRIVATE AND INTERNAL VIEW FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    function _getAccountInformation(address user)
+        private
+        view
+        returns (uint256 totalDscMinted, uint256 collateralValueInUsd)
+    {
+        totalDscMinted = s_DSCMinted[user];
+        collateralValueInUsd = getAccountCollateralValue(user);
+    }
+    /**
+     * Returns how close a user is to get Liquidated.
+     * If a user goes below 1 then they can get liquidated.
+     */
+
+    function _healthFactor() private view returns (uint256) {
+        // Total DSC value
+        // Total Collateral Value
+        (uint256 totalDscMinted, uint256 collateralValueInUsd) = _getAccountInformation(user);
+    }
+
+    function revertIfHealthFactorIsBroken(address user) internal view {
+        // 1. Check Health Factor (Do they have enough collateral?)
+        // 2. Revert If they don't have a good health factor.
+        // HF = summation of collateral in ETH * Liquidation Threshold / Total Borrows in ETH.
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                     PUBLIC AND EXTERNAL VIEW FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    function getAccountCollateralValue(address user) public view returns (uint256) {
+        // loop through each collateral token and get the amount they have deposited and map it to the price t get the USD value
+    }
 }
